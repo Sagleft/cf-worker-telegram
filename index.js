@@ -112,7 +112,7 @@ async function handleRequest(request, env, TELEGRAM_API_BASE, BOT_UPDATE_FORWARD
     console.log('forwarding to', BOT_UPDATE_FORWARD_URL);
 
     const token = pathParts[0].slice('botRedirect'.length); // вытащили токен из пути
-    const target = `${BOT_UPDATE_FORWARD_URL}/botRedirect${token}`;
+    const target = `${BOT_UPDATE_FORWARD_URL}/bot${token}`;
 
     try {
       const forwardReq = new Request(target, {
