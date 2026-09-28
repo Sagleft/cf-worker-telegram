@@ -106,10 +106,16 @@ async function handleRequest(request, env, TELEGRAM_API_BASE, BOT_UPDATE_FORWARD
   // Webhook redirection
   if (pathParts.length === 1 && pathParts[0].startsWith('botRedirect') && request.method === 'POST') {
     if (!BOT_UPDATE_FORWARD_URL) {
+      console.error('SERVER_PROXY_URL is not set');
       return new Response('SERVER_PROXY_URL is not set', { status: 500 });
     }
+    console.log('forwarding to', BOT_UPDATE_FORWARD_URL);
+
+    const token = pathParts[0].slice('botRedirect'.length); // вытащили токен из пути
+    const target = `${BOT_UPDATE_FORWARD_URL}/botRedirect${token}`;
+
     try {
-      const forwardReq = new Request(BOT_UPDATE_FORWARD_URL, {
+      const forwardReq = new Request(target, {
         method: 'POST',
         headers: request.headers,
         body: request.body,
