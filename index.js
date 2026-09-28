@@ -1,7 +1,14 @@
-// CONFIG: Your bot server URL to receive webhook updates
-const BOT_UPDATE_FORWARD_URL = process.env.SERVER_PROXY_URL; // set this
+export default {
+  async fetch(request, env, ctx) {
+    const BOT_UPDATE_FORWARD_URL = env.SERVER_PROXY_URL;
+    const TELEGRAM_API_BASE = 'https://api.telegram.org';
 
-const TELEGRAM_API_BASE = 'https://api.telegram.org';
+    if (request.method === 'OPTIONS') {
+      return handleOptions(request);
+    }
+    return handleRequest(request, env, TELEGRAM_API_BASE, BOT_UPDATE_FORWARD_URL);
+  }
+}
 
 const DOC_HTML = `<!DOCTYPE html>
 <html>
@@ -162,12 +169,3 @@ function handleOptions(request) {
     headers: corsHeaders,
   });
 }
-
-addEventListener('fetch', event => {
-  const request = event.request;
-  if (request.method === 'OPTIONS') {
-    event.respondWith(handleOptions(request));
-  } else {
-    event.respondWith(handleRequest(request));
-  }
-});
