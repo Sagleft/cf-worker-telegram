@@ -3,23 +3,6 @@ const BOT_UPDATE_FORWARD_URL = process.env.SERVER_PROXY_URL; // set this
 
 const TELEGRAM_API_BASE = 'https://api.telegram.org';
 
-const BOT_ALIAS = process.env.BOT_ALIAS;
-const BOT_REAL_TOKEN = process.env.BOT_REAL_TOKEN;
-
-const botPrefix = `bot${BOT_ALIAS}`;
-if (!pathParts[0].startsWith(botPrefix)) {
-    // Для /file/bot<...> проверка отдельная
-    if (!(isFileReq && pathParts[1] && pathParts[1].startsWith(botPrefix))) {
-        return new Response('Invalid token', { status: 403 });
-    }
-}
-
-// Подменяем алиас на реальный токен в пути
-const newPath = url.pathname
-    .replace(`bot${BOT_ALIAS}`, `bot${BOT_REAL_TOKEN}`);
-
-const telegramUrl = `${TELEGRAM_API_BASE}${newPath}${url.search}`;
-
 const DOC_HTML = `<!DOCTYPE html>
 <html>
 <head>
@@ -135,6 +118,7 @@ async function handleRequest(request) {
     return new Response('Invalid request format', { status: 400 });
   }
 
+  const telegramUrl = `${TELEGRAM_API_BASE}${url.pathname}${url.search}`;
   const headers = new Headers(request.headers);
   const contentType = headers.get('Content-Type');
   if (contentType && contentType.startsWith('application/json') && !contentType.includes('charset')) {
