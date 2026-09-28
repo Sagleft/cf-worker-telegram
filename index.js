@@ -89,7 +89,7 @@ fetch('https://{YOUR_WORKER_URL}/bot{YOUR_BOT_TOKEN}/sendMessage', {
 </body>
 </html>`;
 
-async function handleRequest(request) {
+async function handleRequest(request, env, TELEGRAM_API_BASE, BOT_UPDATE_FORWARD_URL) {
   const url = new URL(request.url);
   const pathParts = url.pathname.split('/').filter(Boolean);
 
@@ -103,8 +103,11 @@ async function handleRequest(request) {
     });
   }
 
-  // Webhook redirection: POST to /botRedirect<TOKEN>
+  // Webhook redirection
   if (pathParts.length === 1 && pathParts[0].startsWith('botRedirect') && request.method === 'POST') {
+    if (!BOT_UPDATE_FORWARD_URL) {
+      return new Response('SERVER_PROXY_URL is not set', { status: 500 });
+    }
     try {
       const forwardReq = new Request(BOT_UPDATE_FORWARD_URL, {
         method: 'POST',
