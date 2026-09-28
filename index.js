@@ -115,10 +115,11 @@ async function handleRequest(request, env, TELEGRAM_API_BASE, BOT_UPDATE_FORWARD
     const target = `${BOT_UPDATE_FORWARD_URL}/bot${token}`;
 
     try {
+      const bodyBuffer = await request.arrayBuffer();
       const forwardReq = new Request(target, {
-        method: 'POST',
-        headers: request.headers,
-        body: request.body,
+          method: 'POST',
+          headers: request.headers,
+          body: bodyBuffer,
       });
       const response = await fetch(forwardReq);
       return new Response(response.body, response);
@@ -141,11 +142,15 @@ async function handleRequest(request, env, TELEGRAM_API_BASE, BOT_UPDATE_FORWARD
     headers.set('Content-Type', 'application/json; charset=UTF-8');
   }
 
+  const bodyBuffer = request.method !== 'GET' && request.method !== 'HEAD' 
+    ? await request.arrayBuffer() 
+    : undefined;
+
   const init = {
-    method: request.method,
-    headers,
-    redirect: 'follow',
-    body: request.method !== 'GET' && request.method !== 'HEAD' ? request.body : undefined,
+      method: request.method,
+      headers,
+      redirect: 'follow',
+      body: bodyBuffer,
   };
 
   try {
